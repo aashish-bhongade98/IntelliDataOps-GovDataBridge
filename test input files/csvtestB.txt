@@ -1,3 +1,0 @@
-ResidentID,Name,BirthDate,ResidentialAddress,City_Name,PIN,Contact_No,Occupation
-R001,Sharma Rohan,1985-03-10,101 Flat,Pune,411001,9876543210,Engineer
-R002,Singh Priya,1992-11-25,20 B,Mumbai,400001,8765432109,Doctor
