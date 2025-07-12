@@ -1,0 +1,11 @@
+<staffRecords>
+  <staff>
+    <staffId>S101</staffId>
+    <personName>Vijay Desai</personName>
+    <division>Human Resources</division>
+    <onboardDate>2021-01-01</onboardDate>
+  </staff>
+  <summary>
+    <totalStaff>2</totalStaff>
+  </summary>
+</staffRecords>

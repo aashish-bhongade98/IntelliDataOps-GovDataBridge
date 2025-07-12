@@ -1,0 +1,20 @@
+<employees>
+  <employee>
+    <employeeId>E001</employeeId>
+    <firstName>Vijay</firstName>
+    <lastName>Desai</lastName>
+    <department>HR</department>
+    <hireDate>2021-01-01</hireDate>
+  </employee>
+  <employee>
+    <employeeId>E002</employeeId>
+    <firstName>Shweta</firstName>
+    <lastName>Joshi</lastName>
+    <department>Finance</department>
+    <hireDate>2022-03-15</hireDate>
+  </employee>
+  <metadata>
+    <version>1.0</version>
+    <generatedAt>2025-07-12</generatedAt>
+  </metadata>
+</employees>

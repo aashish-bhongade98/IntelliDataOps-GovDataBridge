@@ -1,0 +1,16 @@
+[
+  {
+    "VehicleNo": "MH12AB1234",
+    "OwnerName": "Ramesh Kumar",
+    "Date": "2020-01-15",
+    "Vehicle__Type": "Car",
+    "VehicleNumber": "ENG12345"
+  },
+  {
+    "VehicleID": "DL01CD5678",
+    "OwnerName": "Suresh Devi",
+    "RegistrationDate": "2019-05-20",
+    "VehicleType": "Motorcycle",
+    "VehicleNumber": "ENG67890"
+  }
+]
