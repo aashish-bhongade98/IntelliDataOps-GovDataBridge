@@ -1,0 +1,22 @@
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Flask specific
+instance/
+
+# VS Code
+.vscode/
+
+# Operating System files
+.DS_Store
+.env

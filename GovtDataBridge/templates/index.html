@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GovDataBridge: Schema Matcher</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f3f4f6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top */
+            padding: 2rem;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+        textarea {
+            min-height: 120px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="container bg-white p-8 rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">GovDataBridge: Schema Matching Tool</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div>
+                <label for="schemaAInput" class="block text-lg font-medium text-gray-700 mb-2">Schema A (Department 1)</label>
+                <textarea id="schemaAInput"
+                          class="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                          placeholder="e.g., CitizenID, FullName, DOB, Address"></textarea>
+            </div>
+            <div>
+                <label for="schemaBInput" class="block text-lg font-medium text-gray-700 mb-2">Schema B (Department 2)</label>
+                <textarea id="schemaBInput"
+                          class="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                          placeholder="e.g., User_ID, Name, BirthDate, City"></textarea>
+            </div>
+        </div>
+
+        <div class="text-center mb-8">
+            <button id="matchButton"
+                    class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-md shadow-md
+                           hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                           transition ease-in-out duration-150">
+                Match Schemas
+            </button>
+        </div>
+
+        <div id="results" class="mt-8 p-6 bg-gray-50 rounded-md border border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Matching Results:</h2>
+            <p id="initialMessage" class="text-gray-600">Enter schemas above and click "Match Schemas" to see results here.</p>
+            <!-- Results will be dynamically inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const matchButton = document.getElementById('matchButton');
+            const schemaAInput = document.getElementById('schemaAInput');
+            const schemaBInput = document.getElementById('schemaBInput');
+            const resultsDiv = document.getElementById('results');
+            const initialMessage = document.getElementById('initialMessage');
+
+            matchButton.addEventListener('click', async function() {
+                const schemaA = schemaAInput.value;
+                const schemaB = schemaBInput.value;
+
+                // Clear previous results and show a loading message
+                resultsDiv.innerHTML = `
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Matching Results:</h2>
+                    <p class="text-gray-600">Processing...</p>
+                `;
+
+                try {
+                    const response = await fetch('/match', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ schemaA: schemaA, schemaB: schemaB })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    displayResults(data);
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    resultsDiv.innerHTML = `
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Matching Results:</h2>
+                        <p class="text-red-600">Error processing request: ${error.message}. Please try again.</p>
+                    `;
+                }
+            });
+
+            function displayResults(data) {
+                let resultsHtml = `
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Matching Results:</h2>
+                `;
+
+                // Matches
+                if (data.matches && data.matches.length > 0) {
+                    resultsHtml += `
+                        <div class="mb-4">
+                            <h3 class="text-lg font-medium text-gray-700 mb-2">Exact Matches (${data.matches.length}):</h3>
+                            <ul class="list-disc list-inside text-gray-600">
+                                ${data.matches.map(match => `<li>${match}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                } else {
+                    resultsHtml += `<p class="text-gray-600 mb-4">No exact matches found.</p>`;
+                }
+
+                // Unmatched A
+                if (data.unmatched_a && data.unmatched_a.length > 0) {
+                    resultsHtml += `
+                        <div class="mb-4">
+                            <h3 class="text-lg font-medium text-gray-700 mb-2">Unique to Schema A (${data.unmatched_a.length}):</h3>
+                            <ul class="list-disc list-inside text-gray-600">
+                                ${data.unmatched_a.map(item => `<li>${item}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                } else {
+                    resultsHtml += `<p class="text-gray-600 mb-4">All fields from Schema A were matched or Schema A was empty.</p>`;
+                }
+
+                // Unmatched B
+                if (data.unmatched_b && data.unmatched_b.length > 0) {
+                    resultsHtml += `
+                        <div class="mb-4">
+                            <h3 class="text-lg font-medium text-gray-700 mb-2">Unique to Schema B (${data.unmatched_b.length}):</h3>
+                            <ul class="list-disc list-inside text-gray-600">
+                                ${data.unmatched_b.map(item => `<li>${item}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                } else {
+                    resultsHtml += `<p class="text-gray-600 mb-4">All fields from Schema B were matched or Schema B was empty.</p>`;
+                }
+
+                resultsDiv.innerHTML = resultsHtml;
+            }
+        });
+    </script>
+</body>
+</html>
